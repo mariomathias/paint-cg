@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1682290955 source:c:\users\arlindo\desktop\scripts massas\projetopaint\main.c
+	<windows.h>
+	<stdio.h>
+	<stdlib.h>
+	<gl/glut.h>
+

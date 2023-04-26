@@ -29,6 +29,9 @@ typedef struct {
     Ponto pontos[MAX_PONTOS_POLIGONO]
 }Poligono;
 
+int aux = 0;
+int posAux_x;
+int posAux_y;
 
 //------VARIAVEIS------
 int quantidade_pontos = 0;
@@ -69,7 +72,7 @@ void addReta(float x1, float y1, float x2, float y2) {
     quantidade_retas++;
 }
 
-void desenharLinha() {
+void desenharReta() {
     glLineWidth(2.0);
     glBegin(GL_LINES);
     for (int i = 0; i < quantidade_pontos; i++){
@@ -90,25 +93,45 @@ void init(){
 void mouse(int button, int state, int x, int y) {
     int pos_x = x;
     int pos_y = y;
-    if (button==GLUT_LEFT_BUTTON && state == GLUT_UP) {
-        printf("%i,%i\n", pos_x, pos_y);
+
+    printf("%i,%i\n", pos_x, pos_y);
+
+    if (button==GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 1){
         addPonto(pos_x,height-pos_y);
         desenharPonto();
+    } else if (button==GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 2) {
+        if (quantidade_retas == 0) {
+            posAux_x = pos_x;
+            posAux_y = pos_y;
+            printf("POSAUX_X= %i, POSAUX_Y = %i\n", posAux_x, posAux_y);
+            addReta(posAux_x,height-posAux_y,pos_x,height-pos_y);
+            desenharReta();
+        } else {
+            addReta(posAux_x,height-posAux_y,pos_x,height-pos_y);
+            printf("POSAUX_X= %i, POSAUX_Y = %i\n", posAux_x, posAux_y);
+            posAux_x = pos_x;
+            posAux_y = pos_y;
+            desenharReta();
+            //problema relacionado ao tamanho do vetor dos pontos
+        }
     }
     glutPostRedisplay();
 }
 
 //------MENU------
-void menu(int opcao) {
+void menuOpcoes(int opcao) {
     switch(opcao) {
+        case 0:
+            printf("Escolheu Ponto\n");
+            aux = 1;
+            break;
         case 1:
-            printf("oi");
+            printf("Escolheu Reta\n");
+            aux = 2;
             break;
         case 2:
-            //criar reta
-            break;
-        case 3:
-            //poligono
+            aux = 3;
+            printf("Escolheu Poligono\n");
             break;
         default:
             break;
@@ -135,10 +158,10 @@ int main(int argc,char **argv)
     glutDisplayFunc(display);
     glutMouseFunc(mouse);
 
-    int menu = glutCreateMenu(menu);
-    glutAddMenuEntry("PONTO",0);
-    glutAddMenuEntry("RETA",1);
-    glutAddMenuEntry("POLIGONO",2);
+    int menu = glutCreateMenu(menuOpcoes);
+    glutAddMenuEntry("PONTO", 0);
+    glutAddMenuEntry("RETA", 1);
+    glutAddMenuEntry("POLIGONO", 2);
 
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 

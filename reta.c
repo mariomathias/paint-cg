@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "reta.h"
 #include "ponto.h"
 Elemento_r **criar_lista_r()
@@ -7,6 +8,11 @@ Elemento_r **criar_lista_r()
     return lista;
 }
 
+Reta cria_reta(Ponto inicio, Ponto fim)
+{
+    Reta reta = {inicio, fim};
+    return reta;
+}
 int insercao_r(Elemento_r **lista, Reta reta)
 {
     if (lista == NULL)
@@ -21,6 +27,7 @@ int insercao_r(Elemento_r **lista, Reta reta)
         if (*lista == NULL)
         {
             *lista = novo_elem;
+            return 1;
         }
         Elemento_r *aux = *lista;
         while (aux->prox != NULL)

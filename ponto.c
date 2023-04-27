@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "ponto.h"
 Elemento_p **criar_lista_p()
 {
@@ -20,6 +22,7 @@ int insercao_p(Elemento_p **lista, Ponto ponto)
         if (*lista == NULL)
         {
             *lista = novo_elem;
+            return 1;
         }
         Elemento_p *aux = *lista;
         while (aux->prox != NULL)
@@ -29,4 +32,15 @@ int insercao_p(Elemento_p **lista, Ponto ponto)
         aux->prox = novo_elem;
         return 1;
     }
+}
+
+Ponto cria_ponto(int x, int y)
+{
+    Ponto ponto = {x, y};
+    return ponto;
+}
+
+void print_ponto(Ponto p)
+{
+    printf("p:%d,%d\n", p.x, p.y);
 }

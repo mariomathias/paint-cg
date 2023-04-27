@@ -17,7 +17,7 @@
 
 typedef struct
 {
-    Ponto pontos[MAX_PONTOS_POLIGONO]
+    Ponto pontos[MAX_PONTOS_POLIGONO];
 } Poligono;
 
 int aux = 0;
@@ -25,58 +25,55 @@ int posAux_x;
 int posAux_y;
 
 //------VARIAVEIS------
+Elemento_p **lista_p = NULL;
+Elemento_r **lista_r = NULL;
+Ponto pontos_reta[2];
+int cont_pontos_reta = 0;
 int quantidade_pontos = 0;
 int quantidade_retas = 0;
 int quantidade_poligonos = 0;
 Poligono poligonos[MAX_POLIGONOS];
 
 //------FUNCOES------
-void addPonto(Elemento_p **lista, float x, float y)
+void addPonto(Elemento_p **lista, Ponto p)
 {
-    Ponto pontinho;
-    pontinho.x = x;
-    pontinho.y = y;
-    insercao_p(lista, pontinho);
+    insercao_p(lista, p);
     quantidade_pontos++;
 }
 
 void desenharPonto(Elemento_p **lista)
 {
     glPointSize(5.0);
+    glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_POINTS);
     Elemento_p *aux = *lista;
-    while (aux->prox != NULL)
+    while (aux != NULL)
     {
-        glColor3f(1.0, 1.0, 1.0);
-        glVertex2f(aux->ponto.x, aux->ponto.y);
+        glVertex2i(aux->ponto.x, aux->ponto.y);
+        aux = aux->prox;
     }
     glEnd();
 }
 
-void addReta(Elemento_r **lista, Ponto ini, Ponto fi)
+void addReta(Elemento_r **lista, Reta r)
 {
-    Reta retinha;
-    retinha.inicio = ini;
-    retinha.fim = fi;
-    insercao_r(lista, retinha);
+    insercao_r(lista, r);
     quantidade_retas++;
 }
 
 void desenharReta(Elemento_r **retas)
 {
     glLineWidth(2.0);
-    if (retas != NULL)
+    glColor3f(1.0, 1.0, 1.0);
+    Elemento_r *aux = *retas;
+    glBegin(GL_LINES);
+    while (aux != NULL)
     {
-        Elemento_r *aux = *retas;
-        for (int i = 0; i < quantidade_retas; i++)
-        {
-            glBegin(GL_LINES);
-            glColor3f(1, 1, 1);
-            glVertex2f(aux[i].reta.inicio.x, aux[i].reta.inicio.y);
-            glVertex2f(aux[i].reta.fim.x, aux[i].reta.fim.y);
-            glEnd();
-        }
+        glVertex2f(aux->reta.inicio.x, aux->reta.inicio.y);
+        glVertex2f(aux->reta.fim.x, aux->reta.fim.y);
+        aux = aux->prox;
     }
+    glEnd();
 }
 
 void init()
@@ -91,33 +88,35 @@ void mouse(int button, int state, int x, int y)
 {
     int pos_x = x;
     int pos_y = y;
-
-    printf("%i,%i\n", pos_x, pos_y);
+    printf("%d,%d\n", pos_x, pos_y);
 
     if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 1)
     {
-        addPonto(pos_x, height - pos_y);
-        desenharPonto();
+        Ponto p = cria_ponto(pos_x, height - pos_y);
+        printf("%d,%d", p.x, p.y);
+        addPonto(lista_p, p);
+        desenharPonto(lista_p);
     }
     else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 2)
     {
-        if (quantidade_retas == 0)
+        posAux_x = pos_x;
+        posAux_y = pos_y;
+        if (cont_pontos_reta == 0)
         {
-            posAux_x = pos_x;
-            posAux_y = pos_y;
-            printf("POSAUX_X= %i, POSAUX_Y = %i\n", posAux_x, posAux_y);
-            addReta(posAux_x, height - posAux_y, pos_x, height - pos_y);
-            desenharReta();
+            pontos_reta[cont_pontos_reta] = cria_ponto(posAux_x, height - posAux_y);
+            cont_pontos_reta++;
         }
-        else
+        else if (cont_pontos_reta == 1)
         {
-            addReta(posAux_x, height - posAux_y, pos_x, height - pos_y);
-            printf("POSAUX_X= %i, POSAUX_Y = %i\n", posAux_x, posAux_y);
-            posAux_x = pos_x;
-            posAux_y = pos_y;
-            desenharReta();
-            // problema relacionado ao tamanho do vetor dos pontos
+            pontos_reta[cont_pontos_reta] = cria_ponto(pos_x, height - pos_y);
+            print_ponto(pontos_reta[0]);
+            print_ponto(pontos_reta[1]);
+            Reta reta = cria_reta(pontos_reta[0], pontos_reta[1]);
+            addReta(lista_r, reta);
+            cont_pontos_reta = 0;
         }
+
+        desenharReta(lista_r);
     }
     glutPostRedisplay();
 }
@@ -155,8 +154,10 @@ void display()
 //------MAIN-------
 int main(int argc, char **argv)
 {
-    Elemento_p **lista_p = criar_lista_p();
-    Elemento_r **lista_r = criar_lista_r();
+    lista_p = criar_lista_p();
+    lista_r = criar_lista_r();
+    (*lista_p) = NULL;
+    (*lista_r) = NULL;
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
@@ -168,7 +169,7 @@ int main(int argc, char **argv)
     glutDisplayFunc(display);
     glutMouseFunc(mouse);
 
-    int menu = glutCreateMenu(menuOpcoes);
+    glutCreateMenu(menuOpcoes);
     glutAddMenuEntry("PONTO", 0);
     glutAddMenuEntry("RETA", 1);
     glutAddMenuEntry("POLIGONO", 2);

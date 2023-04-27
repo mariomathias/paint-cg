@@ -65,13 +65,17 @@ void addReta(Elemento_r **lista, Ponto ini, Ponto fi)
 void desenharReta(Elemento_r **retas)
 {
     glLineWidth(2.0);
-    for (int i = 0; i < quantidade_retas; i++)
+    if (retas != NULL)
     {
-        glBegin(GL_LINES);
-        glColor3f(1, 1, 1);
-        glVertex2f(retas[i]->reta.inicio.x, retas[i]->reta.inicio.y);
-        glVertex2f(retas[i]->reta.fim.x, retas[i]->reta.fim.y);
-        glEnd();
+        Elemento_r *aux = *retas;
+        for (int i = 0; i < quantidade_retas; i++)
+        {
+            glBegin(GL_LINES);
+            glColor3f(1, 1, 1);
+            glVertex2f(aux[i].reta.inicio.x, aux[i].reta.inicio.y);
+            glVertex2f(aux[i].reta.fim.x, aux[i].reta.fim.y);
+            glEnd();
+        }
     }
 }
 

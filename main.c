@@ -18,6 +18,7 @@ int posAux_x;
 int posAux_y;
 int subMenuDesenhar;
 int subMenuSelecionar;
+int tolerance = 10;
 
 //------VARIAVEIS------
 // 1.listas
@@ -25,6 +26,7 @@ Elemento_p **lista_p = NULL;
 Elemento_r **lista_r = NULL;
 Elemento_pol **lista_pol = NULL;
 // 2.auxiliares
+Elemento_p **lista_auxiliar = NULL; //Lista dos pontos selecionados
 Elemento_p **lista_vertices = NULL;
 Ponto pontos_reta[2];
 int cont_pontos_pol = 0;
@@ -42,6 +44,7 @@ void addPonto(Elemento_p **lista, Ponto p)
     insercao_p(lista, p);
     quantidade_pontos++;
 }
+
 void desenharPoligono(Elemento_pol **lista)
 {
     Elemento_pol *aux_pol = *lista;
@@ -61,6 +64,7 @@ void desenharPoligono(Elemento_pol **lista)
         aux_pol = aux_pol->prox;
     }
 }
+
 int finaliza_pol(Elemento_pol **lista_poligonos)
 {
     int tamanho_pol = get_tamanho_lista_p(lista_vertices);
@@ -92,6 +96,11 @@ void desenharPonto(Elemento_p **lista)
     Elemento_p *aux = *lista;
     while (aux != NULL)
     {
+        if (aux->ponto.selecionado == 1) {
+            glColor3f(0.0, 1.0, 0.0);
+        } else {
+            glColor3f(1.0, 1.0, 1.0);
+        }
         glVertex2i(aux->ponto.x, aux->ponto.y);
         aux = aux->prox;
     }
@@ -119,6 +128,48 @@ void desenharReta(Elemento_r **retas)
     glEnd();
 }
 
+int verificarPonto(Elemento_p **lista_p, Elemento_p **lista_auxiliar, int mx, int my)
+{
+    int foiSelecionado = 0;
+    Elemento_p *aux = *lista_p;
+    Elemento_p *aux2 = *lista_auxiliar;
+    while(aux != NULL) {
+        foiSelecionado = pegarPonto(aux->ponto.x, aux->ponto.y, mx, my, tolerance);
+        printf("foiSelecionado: %i\n", foiSelecionado);
+        if (foiSelecionado == 1) {
+            aux->ponto.selecionado = foiSelecionado;
+            Ponto pontao = cria_ponto(aux->ponto.x, aux->ponto.y);
+            printf("criou ponto: %i, %i\n", pontao.x, pontao.y);
+            insercao_p(lista_auxiliar, pontao);
+            return 1;
+            break;
+        } else {
+            aux = aux->prox;
+        }
+    }
+}
+
+int pegarPonto(int px, int py, int mx, int my, int tolerance)
+{
+    //printf("%i, %i/%i, %i\n", px + tolerance, px - tolerance, py + tolerance, py - tolerance);
+    //printf("%i, %i\n", mx, my);
+    if (mx <= px + tolerance && mx >= px - tolerance) {
+        if (my <= (height-py) + tolerance && my >= (height-py) - tolerance) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void deselecionaPonto(Elemento_p **lista_p)
+{
+    Elemento_p *aux = *lista_p;
+    while (aux != NULL) {
+        aux->ponto.selecionado = 0;
+        aux = aux->prox;
+    }
+}
+
 void init()
 {
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -133,13 +184,13 @@ void mouse(int button, int state, int x, int y)
     int pos_y = y;
     printf("%d,%d\n", pos_x, pos_y);
 
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 1)
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 0)
     {
         Ponto p = cria_ponto(pos_x, height - pos_y);
         printf("%d,%d", p.x, p.y);
         addPonto(lista_p, p);
     }
-    else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 2)
+    else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 1)
     {
         posAux_x = pos_x;
         posAux_y = pos_y;
@@ -158,7 +209,7 @@ void mouse(int button, int state, int x, int y)
             cont_pontos_reta = 0;
         }
     }
-    else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 3)
+    else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 2)
     {
         if (!drawing_pol)
         {
@@ -167,6 +218,10 @@ void mouse(int button, int state, int x, int y)
         }
         addPonto(lista_vertices, cria_ponto(x, height - y));
     }
+    else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 3)
+    {
+        verificarPonto(lista_p, lista_auxiliar, pos_x, pos_y);
+    }
 }
 
 void keyboard(unsigned char key, int x, int y)
@@ -174,7 +229,7 @@ void keyboard(unsigned char key, int x, int y)
     switch (key)
     {
     case 27:
-        if (aux == 3)
+        if (aux == 2)
         {
             finaliza_pol(lista_pol);
             drawing_pol = FALSE;
@@ -196,19 +251,25 @@ void menuOpcoes(int opcao)
     {
     case 0:
         printf("Escolheu Ponto\n");
-        aux = 1;
+        aux = 0;
+        deselecionaPonto(lista_p);
         break;
     case 1:
         printf("Escolheu Reta\n");
-        aux = 2;
+        aux = 1;
         break;
     case 2:
-        aux = 3;
+        aux = 2;
         printf("Escolheu Poligono\n");
+        break;
+    case 3:
+        aux = 3;
+        printf("Escolheu Selecionar Objeto\n");
         break;
     default:
         break;
     }
+    glutPostRedisplay();
 }
 
 void display()
@@ -226,8 +287,11 @@ void display()
 int main(int argc, char **argv)
 {
     lista_p = criar_lista_p();
+    lista_auxiliar = criar_lista_p();
     lista_r = criar_lista_r();
     lista_pol = criar_lista_pol();
+    (*lista_auxiliar) = NULL;
+
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitWindowPosition(10, 10);
@@ -245,7 +309,7 @@ int main(int argc, char **argv)
     //coloquei as mesmas opcoes so para nao deixar em branco
     //mas ao criar as funcinalidade de selecionar
     //encaixar aqui por favor
-    glutAddMenuEntry("PONTO", 0);
+    glutAddMenuEntry("SELECIONAR OBJETO", 3);
     glutAddMenuEntry("RETA", 1);
     glutAddMenuEntry("POLIGONO", 2);
 

@@ -5,6 +5,7 @@ typedef struct
 {
     int x;
     int y;
+    int selecionado;
 } Ponto;
 
 typedef struct elemento_p

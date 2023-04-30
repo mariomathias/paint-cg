@@ -37,7 +37,7 @@ int insercao_p(Elemento_p **lista, Ponto ponto)
 
 Ponto cria_ponto(int x, int y)
 {
-    Ponto ponto = {x, y};
+    Ponto ponto = {x, y, 0};
     return ponto;
 }
 

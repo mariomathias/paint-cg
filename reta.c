@@ -5,6 +5,7 @@ Elemento_r **criar_lista_r()
 {
     Elemento_r **lista;
     lista = (Elemento_r **)malloc(sizeof(Elemento_r *));
+    *lista = NULL;
     return lista;
 }
 

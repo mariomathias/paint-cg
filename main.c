@@ -16,6 +16,8 @@
 int aux = 0;
 int posAux_x;
 int posAux_y;
+int subMenuDesenhar;
+int subMenuSelecionar;
 
 //------VARIAVEIS------
 // 1.listas
@@ -234,13 +236,25 @@ int main(int argc, char **argv)
     init();
     glClear(GL_COLOR_BUFFER_BIT);
 
+    subMenuDesenhar = glutCreateMenu(menuOpcoes);
+    glutAddMenuEntry("PONTO", 0);
+    glutAddMenuEntry("RETA", 1);
+    glutAddMenuEntry("POLIGONO", 2);
+
+    subMenuSelecionar = glutCreateMenu(menuOpcoes);
+    //coloquei as mesmas opcoes so para nao deixar em branco
+    //mas ao criar as funcinalidade de selecionar
+    //encaixar aqui por favor
+    glutAddMenuEntry("PONTO", 0);
+    glutAddMenuEntry("RETA", 1);
+    glutAddMenuEntry("POLIGONO", 2);
+
     glutMouseFunc(mouse);
     glutKeyboardFunc(keyboard);
     glutCreateMenu(menuOpcoes);
     glutDisplayFunc(display);
-    glutAddMenuEntry("PONTO", 0);
-    glutAddMenuEntry("RETA", 1);
-    glutAddMenuEntry("POLIGONO", 2);
+    glutAddSubMenu("DESENHAR", subMenuDesenhar);
+    glutAddSubMenu("SELECIONAR", subMenuSelecionar);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 
     glutMainLoop();

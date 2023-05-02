@@ -31,13 +31,13 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="fila.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="fila.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="poligono.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="poligono.h" />
 		<Unit filename="ponto.c">
 			<Option compilerVar="CC" />
 		</Unit>

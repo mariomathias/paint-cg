@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1682895523 source:c:\users\arlindo\desktop\scripts massas\projetopaint\main.c
+1683007102 source:c:\users\arlindo\desktop\scripts massas\projetopaint\main.c
 	<windows.h>
 	<stdio.h>
 	<stdlib.h>
@@ -11,7 +11,7 @@
 1682894540 c:\users\arlindo\desktop\scripts massas\projetopaint\ponto.h
 	<stdlib.h>
 
-1682878042 c:\users\arlindo\desktop\scripts massas\projetopaint\reta.h
+1682973140 c:\users\arlindo\desktop\scripts massas\projetopaint\reta.h
 	<stdlib.h>
 	"ponto.h"
 
@@ -20,7 +20,7 @@
 	<stdlib.h>
 	"ponto.h"
 
-1682878042 source:c:\users\arlindo\desktop\scripts massas\projetopaint\reta.c
+1682973160 source:c:\users\arlindo\desktop\scripts massas\projetopaint\reta.c
 	<stdlib.h>
 	"reta.h"
 	"ponto.h"

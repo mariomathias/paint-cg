@@ -9,6 +9,12 @@
 #define width 600
 #define height 500
 
+#define DENTRO 0
+#define ACIMA 1
+#define ABAIXO 2
+#define ESQUERDA 4
+#define DIREITA 8
+
 // define init func
 // GLfloat t=0;
 
@@ -128,6 +134,7 @@ void desenharReta(Elemento_r **retas)
     glEnd();
 }
 
+//------FUNCOES AUXILIARES------
 int verificarPonto(Elemento_p **lista_p, Elemento_p **lista_auxiliar, int mx, int my)
 {
     int foiSelecionado = 0;
@@ -170,6 +177,113 @@ void deselecionaPonto(Elemento_p **lista_p)
     }
 }
 
+int pegarReta(Ponto inicioP, Ponto fimP, int mx, int my)
+{
+    int xmax = mx + tolerance;
+    int xmin = mx - tolerance;
+    int ymax = my + tolerance;
+    int ymin = my - tolerance;
+    int x1, y1, x2, y2;
+
+    Ponto auxPonto;
+    auxPonto.x = inicioP.x;
+    auxPonto.y = inicioP.y;
+    printf("auxPonto.x: %i\n", auxPonto.x);
+    //printf("auxPonto.y: %i\n", auxPonto.y);
+
+    while (1) {
+        int codeInicioP = identificarCodigo(auxPonto, mx, my);
+        int codeFimP = identificarCodigo(fimP, mx, my);
+        printf("fimP: (%i,%i)\n", fimP.x,height-fimP.y);
+        printf("codeInicioP: %i\n", codeInicioP);
+        printf("codeFimP: %i\n", codeFimP);
+        printf("AND: %i\n", codeInicioP & 1);
+        printf("AND: %i\n", codeInicioP & 4);
+
+        if (codeInicioP == 0 && codeFimP == 0) {  //Os 2 pontos na tolerancia
+            printf("Os 2 pontos estao na tolerancia\n");
+            return 1;
+            break;
+        }
+        else if (codeInicioP == 0 || codeFimP == 0) { //Um dos pontos na tolerancia
+            printf("Um dos pontos na tolerancia\n");
+            return 1;
+            break;
+        }
+        else if ((codeInicioP & codeFimP) != 0) { //Totalmente fora da tolerancia
+            printf("Totalmente fora da tolerancia\n");
+            return 0;
+            break;
+        }
+        else { //Caso nao trivial, mas so uma delas tao certas, ops
+            x1 = auxPonto.x;
+            y1 = auxPonto.y;
+            x2 = fimP.x;
+            y2 = fimP.y;
+
+            if ((codeInicioP & 1) == ACIMA) {
+                printf("Ponto inicial acima\n");
+                auxPonto.x = x1 + (ymax - x1)*((x2 - x1)/(y2 - y1));
+                auxPonto.y = ymax;
+                printf("|| auxPontox: %i ||\n", auxPonto.x);
+                printf("|| auxPontoy: %i ||\n", auxPonto.y);
+                break;
+            }
+            else if ((codeInicioP & 2) == ABAIXO) {
+                printf("Ponto inicial abaixo\n");
+                auxPonto.x = x1 + (ymin - y1)*((x2 - x1)/(y2 - y1));
+                auxPonto.y = ymin;
+                printf("|| auxPontox: %i ||\n", auxPonto.x);
+                printf("|| auxPontoy: %i ||\n", auxPonto.y);
+            }
+            else if ((codeInicioP & 4) == ESQUERDA) {
+                printf("Ponto inicial a esquerda\n");
+                auxPonto.y = y1 + (xmax - x1)*((y2 - y1)/(x2 - y1));
+                auxPonto.x = xmax;
+                printf("|| auxPontox: %i ||\n", auxPonto.x);
+                printf("|| auxPontoy: %i ||\n", auxPonto.y);
+            }
+            else if ((codeInicioP & 8) == DIREITA) {
+                printf("Ponto inicial a direita\n");
+                auxPonto.y = y1 + (xmin - x1)*((y2 - y1)/(x2 - x1));
+                auxPonto.x = xmin;
+                printf("|| auxPontox: %i ||\n", auxPonto.x);
+                printf("|| auxPontoy: %i ||\n", auxPonto.y);
+            }
+
+        }
+    }
+    return 0;
+}
+
+int identificarCodigo(Ponto p, int mx, int my)
+{
+    int codigo = DENTRO;
+    printf("Mouse (%i,%i)\n", mx, my);
+    //0001
+    if ((height-p.y) > my + tolerance) codigo += ACIMA;
+    //0010
+    if ((height-p.y) < my - tolerance) codigo += ABAIXO;
+    //0100
+    if (p.x > mx + tolerance) codigo += ESQUERDA;
+    //1000
+    if (p.x < mx - tolerance) codigo += DIREITA;
+
+    return codigo;
+}
+
+int verificarReta(Elemento_r **lista_r, int mx, int my)
+{
+    int foiSelecionado = 0;
+    Elemento_r *aux = *lista_r;
+
+    while (aux != NULL) {
+        foiSelecionado = pegarReta(aux->reta.inicio, aux->reta.fim, mx, my);
+        printf("foiSelecionado: %i\n", foiSelecionado);
+        aux = aux->prox;
+    }
+}
+
 void init()
 {
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -182,12 +296,11 @@ void mouse(int button, int state, int x, int y)
 {
     int pos_x = x;
     int pos_y = y;
-    printf("%d,%d\n", pos_x, pos_y);
 
     if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 0)
     {
         Ponto p = cria_ponto(pos_x, height - pos_y);
-        printf("%d,%d", p.x, p.y);
+        printf("%d,%d\n", p.x, p.y);
         addPonto(lista_p, p);
     }
     else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 1)
@@ -221,6 +334,11 @@ void mouse(int button, int state, int x, int y)
     else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 3)
     {
         verificarPonto(lista_p, lista_auxiliar, pos_x, pos_y);
+    }
+    else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 4)
+    {
+        printf("x: %i, y: %i\n", x, y);
+        verificarReta(lista_r, x, y);
     }
 }
 
@@ -266,6 +384,10 @@ void menuOpcoes(int opcao)
         aux = 3;
         printf("Escolheu Selecionar Objeto\n");
         break;
+    case 4:
+        aux = 4;
+        printf("Escolheu Selecionar Reta\n");
+        break;
     default:
         break;
     }
@@ -309,9 +431,9 @@ int main(int argc, char **argv)
     //coloquei as mesmas opcoes so para nao deixar em branco
     //mas ao criar as funcinalidade de selecionar
     //encaixar aqui por favor
-    glutAddMenuEntry("SELECIONAR OBJETO", 3);
-    glutAddMenuEntry("RETA", 1);
-    glutAddMenuEntry("POLIGONO", 2);
+    glutAddMenuEntry("PONTO", 3);
+    glutAddMenuEntry("RETA", 4);
+    glutAddMenuEntry("POLIGONO", 5);
 
     glutMouseFunc(mouse);
     glutKeyboardFunc(keyboard);

@@ -284,6 +284,46 @@ int verificarReta(Elemento_r **lista_r, int mx, int my)
     }
 }
 
+void transladarPontoDireita(Elemento_p **lista_auxiliar){
+    Elemento_p *aux = *lista_auxiliar;
+    while (aux != NULL){
+        aux->ponto.x += 5;
+        printf("transladando para direita %i \n", aux->ponto.x);
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void transladarPontoEsquerda(Elemento_p **lista_auxiliar){
+    Elemento_p *aux = *lista_auxiliar;
+    while (aux != NULL){
+        printf("transladando para esquerda %i \n", aux->ponto.x);
+        aux->ponto.x -= 5;
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void transladarPontoCima(Elemento_p **lista_auxiliar){
+    Elemento_p *aux = *lista_auxiliar;
+    while (aux != NULL){
+        printf("transladando para cima %i \n", aux->ponto.y);
+        aux->ponto.y += 5;
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void transladarPontoBaixo(Elemento_p **lista_auxiliar){
+    Elemento_p *aux = *lista_auxiliar;
+    while (aux != NULL){
+        printf("transladando para baixo %i \n", aux->ponto.y);
+        aux->ponto.y -= 5;
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
 void init()
 {
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -359,6 +399,52 @@ void keyboard(unsigned char key, int x, int y)
             exit(0);
         }
         break;
+
+    case 100:
+        glPushMatrix();
+        if (aux == 3){
+            transladarPontoDireita(lista_auxiliar);
+        }
+        if (aux == 4){
+            printf("a");
+        }
+        glPopMatrix();
+        break;
+    case 97:
+        if (aux == 3){
+            transladarPontoEsquerda(lista_auxiliar);
+        }
+        if (aux == 4){
+            printf("a");
+        }
+        break;
+    case 115:
+        if (aux == 3){
+            transladarPontoBaixo(lista_auxiliar);
+        }
+        if (aux == 4){
+            printf("a");
+        }
+        break;
+    case 119:
+        if (aux == 3){
+            transladarPontoCima(lista_auxiliar);
+        }
+        if (aux == 4){
+            printf("a");
+        }
+        break;
+    case 43:
+        //aumenta
+        if (aux == 3){
+            printf("não pode escalar ponto!\n");
+        }
+        break;
+    case 45:
+        //diminui
+        if (aux ==3){
+            printf("não pode escalar ponto!\n");
+        }
     }
 }
 

@@ -34,6 +34,7 @@ Elemento_pol **lista_pol = NULL;
 // 2.auxiliares
 Elemento_p **lista_auxiliar = NULL; //Lista dos pontos selecionados
 Elemento_r **lista_auxiliar = NULL; //Lista das retas selecionadas
+Elemento_pol **lista_auxiliar = NULL //Lista dos poligonos selecionados
 Elemento_p **lista_vertices = NULL;
 Ponto pontos_reta[2];
 int cont_pontos_pol = 0;
@@ -305,6 +306,18 @@ void transladarRetaDireta(Elemento_r **lista_auxiliar){
     glutPostRedisplay();
 }
 
+void transladarPolDireita(Elemento_pol **lista_auxiliar){
+    Elemento_pol *aux = *lista_auxiliar;
+    Elemento_p *vertice = NULL;
+    while (aux != NULL){
+        vertice = *(aux->poligono.vertices)
+        while (vertice != NULL){
+            vertice.x += 2;
+            vertice = vertice.prox;
+        }
+        aux = aux->prox;
+    }
+}
 
 void transladarPontoEsquerda(Elemento_p **lista_auxiliar){
     Elemento_p *aux = *lista_auxiliar;
@@ -324,6 +337,19 @@ void transladarRetaEsquerda(Elemento_r **lista_auxiliar){
         aux = aux->prox;
     }
     glutPostRedisplay();
+}
+
+void transladarPolEsquerda(Elemento_pol **lista_auxiliar){
+    Elemento_pol *aux = *lista_auxiliar;
+    Elemento_p *vertice = NULL;
+    while (aux != NULL){
+        vertice = *(aux->poligono.vertices)
+        while (vertice != NULL){
+            vertice.x -= 2;
+            vertice = vertice.prox;
+        }
+        aux = aux->prox;
+    }
 }
 
 void transladarPontoCima(Elemento_p **lista_auxiliar){
@@ -346,6 +372,19 @@ void transladarRetaCima(Elemento_r **lista_auxiliar){
     glutPostRedisplay();
 }
 
+void transladarPolCima(Elemento_pol **lista_auxiliar){
+    Elemento_pol *aux = *lista_auxiliar;
+    Elemento_p *vertice = NULL;
+    while (aux != NULL){
+        vertice = *(aux->poligono.vertices)
+        while (vertice != NULL){
+            vertice.y += 2;
+            vertice = vertice.prox;
+        }
+        aux = aux->prox;
+    }
+}
+
 void transladarPontoBaixo(Elemento_p **lista_auxiliar){
     Elemento_p *aux = *lista_auxiliar;
     while (aux != NULL){
@@ -364,6 +403,19 @@ void transladarRetaBaixo(Elemento_r **lista_auxiliar){
         aux = aux->prox;
     }
     glutPostRedisplay();
+}
+
+void transladarPolBaixo(Elemento_pol **lista_auxiliar){
+    Elemento_pol *aux = *lista_auxiliar;
+    Elemento_p *vertice = NULL;
+    while (aux != NULL){
+        vertice = *(aux->poligono.vertices)
+        while (vertice != NULL){
+            vertice.y -= 2;
+            vertice = vertice.prox;
+        }
+        aux = aux->prox;
+    }
 }
 
 void init()
@@ -443,14 +495,15 @@ void keyboard(unsigned char key, int x, int y)
         break;
 
     case 100:
-        glPushMatrix();
         if (aux == 3){
             transladarPontoDireita(lista_auxiliar);
         }
         if (aux == 4){
             transladarRetaDireta(lista_auxiliar);
         }
-        glPopMatrix();
+        if (aux == 5){
+            transladarPolDireita(lista_auxiliar);
+        }
         break;
     case 97:
         if (aux == 3){
@@ -458,6 +511,9 @@ void keyboard(unsigned char key, int x, int y)
         }
         if (aux == 4){
             transladarRetaEsquerda(lista_auxiliar);
+        }
+        if (aux == 5){
+            transladarPolEsquerda(lista_auxiliar);
         }
         break;
     case 115:
@@ -467,6 +523,9 @@ void keyboard(unsigned char key, int x, int y)
         if (aux == 4){
             transladarRetaBaixo(lista_auxiliar);
         }
+        if (aux == 5){
+            transladarPolBaixo(lista_auxiliar);
+        }
         break;
     case 119:
         if (aux == 3){
@@ -474,6 +533,9 @@ void keyboard(unsigned char key, int x, int y)
         }
         if (aux == 4){
             transladarRetaCima(lista_auxiliar);
+        }
+        if (aux == 5){
+            transladarPolCima(lista_auxiliar);
         }
         break;
     case 43:
@@ -516,6 +578,9 @@ void menuOpcoes(int opcao)
         aux = 4;
         printf("Escolheu Selecionar Reta\n");
         break;
+    case 5:
+        aux = 5;
+        printf("Escolheu Selecionar Polígono\n");
     default:
         break;
     }

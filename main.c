@@ -32,7 +32,9 @@ Elemento_p **lista_p = NULL;
 Elemento_r **lista_r = NULL;
 Elemento_pol **lista_pol = NULL;
 // 2.auxiliares
-Elemento_p **lista_auxiliar_p = NULL; // Lista dos pontos selecionados
+Elemento_p **lista_auxiliar_p = NULL;     // Lista dos pontos selecionados
+Elemento_r **lista_auxiliar_r = NULL;     // Lista das retas selecionadas
+Elemento_pol **lista_auxiliar_pol = NULL; // Lista dos poligonos selecionados
 Elemento_p **lista_vertices = NULL;
 Ponto pontos_reta[2];
 int cont_pontos_pol = 0;
@@ -318,16 +320,72 @@ void transladarPontoDireita(Elemento_p **lista_auxiliar_p)
     glutPostRedisplay();
 }
 
+void transladarRetaDireta(Elemento_r **lista_auxiliar_r)
+{
+    Elemento_r *aux = *lista_auxiliar_r;
+    while (aux != NULL)
+    {
+        aux->reta.inicio.x += 2;
+        aux->reta.fim.x += 2;
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void transladarPolDireita(Elemento_pol **lista_auxiliar_pol)
+{
+    Elemento_pol *aux = *lista_auxiliar_pol;
+    Elemento_p *vertice = NULL;
+    while (aux != NULL)
+    {
+        vertice = *(aux->poligono.vertices);
+        while (vertice != NULL)
+        {
+            vertice->ponto.x += 2;
+            vertice = vertice->prox;
+        }
+        aux = aux->prox;
+    }
+}
+
 void transladarPontoEsquerda(Elemento_p **lista_auxiliar_p)
 {
     Elemento_p *aux = *lista_auxiliar_p;
     while (aux != NULL)
     {
         printf("transladando para esquerda %i \n", aux->ponto.x);
-        aux->ponto.x -= 5;
+        aux->ponto.x -= 2;
         aux = aux->prox;
     }
     glutPostRedisplay();
+}
+
+void transladarRetaEsquerda(Elemento_r **lista_auxiliar_r)
+{
+    Elemento_r *aux = *lista_auxiliar_r;
+    while (aux != NULL)
+    {
+        aux->reta.inicio.x -= 2;
+        aux->reta.fim.x -= 2;
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void transladarPolEsquerda(Elemento_pol **lista_auxiliar_pol)
+{
+    Elemento_pol *aux = *lista_auxiliar_pol;
+    Elemento_p *vertice = NULL;
+    while (aux != NULL)
+    {
+        vertice = *(aux->poligono.vertices);
+        while (vertice != NULL)
+        {
+            vertice->ponto.x -= 2;
+            vertice = vertice->prox;
+        }
+        aux = aux->prox;
+    }
 }
 
 void transladarPontoCima(Elemento_p **lista_auxiliar_p)
@@ -336,10 +394,38 @@ void transladarPontoCima(Elemento_p **lista_auxiliar_p)
     while (aux != NULL)
     {
         printf("transladando para cima %i \n", aux->ponto.y);
-        aux->ponto.y += 5;
+        aux->ponto.y += 2;
         aux = aux->prox;
     }
     glutPostRedisplay();
+}
+
+void transladarRetaCima(Elemento_r **lista_auxiliar_r)
+{
+    Elemento_r *aux = *lista_auxiliar_r;
+    while (aux != NULL)
+    {
+        aux->reta.inicio.y += 2;
+        aux->reta.fim.y += 2;
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void transladarPolCima(Elemento_pol **lista_auxiliar_pol)
+{
+    Elemento_pol *aux = *lista_auxiliar_pol;
+    Elemento_p *vertice = NULL;
+    while (aux != NULL)
+    {
+        vertice = *(aux->poligono.vertices);
+        while (vertice != NULL)
+        {
+            vertice->ponto.y += 2;
+            vertice = vertice->prox;
+        }
+        aux = aux->prox;
+    }
 }
 
 void transladarPontoBaixo(Elemento_p **lista_auxiliar_p)
@@ -348,10 +434,38 @@ void transladarPontoBaixo(Elemento_p **lista_auxiliar_p)
     while (aux != NULL)
     {
         printf("transladando para baixo %i \n", aux->ponto.y);
-        aux->ponto.y -= 5;
+        aux->ponto.y -= 2;
         aux = aux->prox;
     }
     glutPostRedisplay();
+}
+
+void transladarRetaBaixo(Elemento_r **lista_auxiliar_r)
+{
+    Elemento_r *aux = *lista_auxiliar_r;
+    while (aux != NULL)
+    {
+        aux->reta.inicio.y -= 2;
+        aux->reta.fim.y -= 2;
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void transladarPolBaixo(Elemento_pol **lista_auxiliar_pol)
+{
+    Elemento_pol *aux = *lista_auxiliar_pol;
+    Elemento_p *vertice = NULL;
+    while (aux != NULL)
+    {
+        vertice = *(aux->poligono.vertices);
+        while (vertice != NULL)
+        {
+            vertice->ponto.y -= 2;
+            vertice = vertice->prox;
+        }
+        aux = aux->prox;
+    }
 }
 
 void init()
@@ -431,16 +545,18 @@ void keyboard(unsigned char key, int x, int y)
         break;
 
     case 100:
-        glPushMatrix();
         if (aux == 3)
         {
             transladarPontoDireita(lista_auxiliar_p);
         }
         if (aux == 4)
         {
-            printf("a");
+            transladarRetaDireta(lista_auxiliar_r);
         }
-        glPopMatrix();
+        if (aux == 5)
+        {
+            transladarPolDireita(lista_auxiliar_pol);
+        }
         break;
     case 97:
         if (aux == 3)
@@ -449,7 +565,11 @@ void keyboard(unsigned char key, int x, int y)
         }
         if (aux == 4)
         {
-            printf("a");
+            transladarRetaEsquerda(lista_auxiliar_r);
+        }
+        if (aux == 5)
+        {
+            transladarPolEsquerda(lista_auxiliar_pol);
         }
         break;
     case 115:
@@ -459,7 +579,11 @@ void keyboard(unsigned char key, int x, int y)
         }
         if (aux == 4)
         {
-            printf("a");
+            transladarRetaBaixo(lista_auxiliar_r);
+        }
+        if (aux == 5)
+        {
+            transladarPolBaixo(lista_auxiliar_pol);
         }
         break;
     case 119:
@@ -469,7 +593,11 @@ void keyboard(unsigned char key, int x, int y)
         }
         if (aux == 4)
         {
-            printf("a");
+            transladarRetaCima(lista_auxiliar_r);
+        }
+        if (aux == 5)
+        {
+            transladarPolCima(lista_auxiliar_pol);
         }
         break;
     case 43:
@@ -514,6 +642,9 @@ void menuOpcoes(int opcao)
         aux = 4;
         printf("Escolheu Selecionar Reta\n");
         break;
+    case 5:
+        aux = 5;
+        printf("Escolheu Selecionar Pol�gono\n");
     default:
         break;
     }

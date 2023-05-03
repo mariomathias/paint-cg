@@ -6,6 +6,7 @@ typedef struct
 {
     Ponto inicio;
     Ponto fim;
+    int selecionado;
 } Reta;
 
 typedef struct elemento_r

@@ -12,7 +12,7 @@ Elemento_pol **criar_lista_pol()
 
 Poligono cria_poligono(Elemento_p **vertices)
 {
-    Poligono p = {vertices, 0};
+    Poligono p = {vertices, 0, 0};
     return p;
 }
 int insercao_pol(Elemento_pol **lista, Poligono p)

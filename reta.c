@@ -11,7 +11,7 @@ Elemento_r **criar_lista_r()
 
 Reta cria_reta(Ponto inicio, Ponto fim)
 {
-    Reta reta = {inicio, fim};
+    Reta reta = {inicio, fim, 0};
     return reta;
 }
 int insercao_r(Elemento_r **lista, Reta reta)

@@ -2,10 +2,12 @@
 #define POLIGONO_H
 #include <stdlib.h>
 #include "ponto.h"
+
 typedef struct
 {
     Elemento_p **vertices;
     int qtd_vertices;
+    int selecionado;
 } Poligono;
 
 typedef struct elemento_pol
@@ -13,6 +15,7 @@ typedef struct elemento_pol
     Poligono poligono;
     struct elemento_pol *prox;
 } Elemento_pol;
+
 Poligono cria_poligono(Elemento_p **vertices);
 Elemento_pol **criar_lista_pol();
 int insercao_pol(Elemento_pol **lista, Poligono poligono);

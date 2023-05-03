@@ -67,6 +67,11 @@ void desenharPoligono(Elemento_pol **lista)
             glVertex2i(aux_ponto->ponto.x, aux_ponto->ponto.y);
             aux_ponto = aux_ponto->prox;
         }
+        while (aux_ponto != NULL)
+        {
+            glVertex2i(aux_ponto->ponto.x, aux_ponto->ponto.y);
+            aux_ponto = aux_ponto->prox;
+        }
         printf("addrs: %p\n", aux_pol);
         glEnd();
         aux_pol = aux_pol->prox;
@@ -87,7 +92,7 @@ int finaliza_pol(Elemento_pol **lista_poligonos)
         Ponto ultimo_vertice = cria_ponto(vertice.x, vertice.y);
         printf("bb\n");
         insercao_p(lista_vertices, ultimo_vertice);
-        Poligono p = {lista_vertices, tamanho_pol + 1};
+        Poligono p = {lista_vertices, tamanho_pol + 1, 0};
         insercao_pol(lista_poligonos, p);
         quantidade_poligonos++;
         desenharPoligono(lista_pol);
@@ -173,6 +178,7 @@ int verificarPonto(Elemento_p **lista_p, Elemento_p **lista_auxiliar_p, int mx, 
         }
         aux = aux->prox;
     }
+    return 0;
 }
 
 void deselecionaPonto(Elemento_p **lista_p)
@@ -186,6 +192,7 @@ void deselecionaPonto(Elemento_p **lista_p)
         insercao_p_pointer(lista_p, removido);
     }
 }
+
 int identificarCodigo(Ponto p, int mx, int my)
 {
     int codigo = DENTRO;
@@ -292,17 +299,103 @@ int pegarReta(Ponto inicioP, Ponto fimP, int mx, int my)
     return 0;
 }
 
-int verificarReta(Elemento_r **lista_r, int mx, int my)
+int verificarReta(Elemento_r **lista_r, Elemento_r **lista_auxiliar_r, int mx, int my)
 {
     int foiSelecionado = 0;
     Elemento_r *aux = *lista_r;
 
-    while (aux != NULL)
-    {
+    while (aux != NULL) {
         foiSelecionado = pegarReta(aux->reta.inicio, aux->reta.fim, mx, my);
         printf("foiSelecionado: %i\n", foiSelecionado);
-        aux = aux->prox;
+        if (foiSelecionado == 1) {
+            aux->reta.selecionado = foiSelecionado;
+            Reta retao = cria_reta(aux->reta.inicio, aux->reta.fim);
+            printf("Criou reta: (%i, %i),(%i, %i)\n", retao.inicio.x, retao.inicio.y, retao.fim.x, retao.fim.y);
+            insercao_r(lista_auxiliar_r, retao);
+            return 1;
+        } else {
+            aux = aux->prox;
+        }
     }
+    return 0;
+}
+
+int pegarPoligono(Elemento_pol **lista_pol, int x, int y)
+{
+    int intersec = 0, xi;
+    Elemento_pol *aux_pol = *lista_pol;
+    printf("%p\n", aux_pol);
+    Elemento_p *vertice = NULL;
+    printf("%p\n", vertice);
+    //Elemento_p *primeiro_vertice = NULL;
+    //primeiro_vertice = *(aux_pol->poligono.vertices);
+    //printf("%p\n", primeiro_vertice);
+    //printf("primeiro_vertice: %i, %i\n", primeiro_vertice->ponto.x, primeiro_vertice->ponto.y);
+    //imprimir_lista(vertice);
+    Ponto p1, p2;
+    printf("MOUSE (%i,%i)\n",x,y);
+
+    while (aux_pol != NULL) {
+        printf("aux_pol ADDR %p\n", aux_pol);
+        printf("vertice addr %p\n", vertice);
+        vertice = *(aux_pol->poligono.vertices);
+        printf("vertice addr %p\n", vertice);
+        while (vertice != NULL) {
+            p1 = vertice->ponto;
+            p2 = vertice->prox->ponto;
+            printf("(p1.x > x) && (p2.x > x) = %i\n", (p1.x > x) && (p2.x > x));
+            printf("(p1.y > y) && (p2.y < y) = %i\n", (p1.y > y) && (p2.y < y));
+            printf("(p1.y < y) && (p2.y > y) = %i\n", (p1.y < y) && (p2.y > y));
+            printf("((p1.y > y) && (p2.y < y)) || ((p1.y < y) && (p2.y > y)) = %i\n", ((p1.y > y) && (p2.y < y)) || ((p1.y < y) && (p2.y > y)));
+            printf("(((p1.x > x) && (p2.x > x)) && (((p1.y > y) && (p2.y < y)) || ((p1.y < y) && (p2.y > y)))) = %i\n", (((p1.x > x) && (p2.x > x)) && (((p1.y > y) && (p2.y < y)) || ((p1.y < y) && (p2.y > y)))));
+            printf("(%i, %i), (%i, %i)\n", p1.x, p1.y, p2.x, p2.y);
+            if(((p1.y > y) && (p2.y > y)) || ((p1.y < y) && (p2.y < y)) || ((p1.x < x) && (p2.x < x)) || (p1.y == p2.y)) {
+                printf("Continue\n");
+            }
+            else if (((p1.x > x) && (p2.x > x)) && (((p1.y > y) && (p2.y < y)) || ((p1.y < y) && (p2.y > y)))) {
+                intersec += 1;
+            }
+            else {
+                xi = p1.x + ((y - p1.y)*(p2.x - p1.x))/(p2.y - p1.y);
+                printf("xi: %i\n", xi);
+                if (xi > x) intersec += 1;
+            }
+            printf("intersec = %i\n", intersec);
+            printf("vertice: %i, %i\n", vertice->ponto.x, vertice->ponto.y);
+            vertice = vertice->prox;
+            printf("PROX: %p\n", vertice->prox);
+            if (vertice->prox == NULL) break;
+        }
+        if (intersec%2 != 0) return 1;
+        printf("----------------------------------------------------------\n");
+        printf("aux_pol ADDR %p\n", aux_pol);
+        printf("foiSelecionado = 0!!!!!!!!!!!!!!\n");
+        aux_pol = aux_pol->prox;
+    }
+    return 0;
+}
+
+int verificarPoligono(Elemento_pol **lista, Elemento_pol **lista_auxiliar_pol,  int mx, int my)
+{
+    int foiSelecionado = 0;
+    Elemento_pol *aux = *lista;
+
+    while (aux != NULL) {
+        foiSelecionado = pegarPoligono(lista, mx, my);
+        printf("|| foiSelecionado: %i ||\n", foiSelecionado);
+        printf("FIM\n");
+        if (foiSelecionado) {
+            aux->poligono.selecionado = foiSelecionado;
+            Poligono poligonao = cria_poligono(aux->poligono.vertices);
+            printf("Criou poligono com vertices iniciais: (%i, %i)\n", (*poligonao.vertices)->ponto.x, (*poligonao.vertices)->ponto.y);
+            insercao_pol(lista_auxiliar_pol,poligonao);
+
+            return 1;
+        } else {
+            aux = aux->prox;
+        }
+    }
+    return 0;
 }
 
 void transladarPontoDireita(Elemento_p **lista_auxiliar_p)
@@ -725,7 +818,11 @@ void mouse(int button, int state, int x, int y)
     else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 4)
     {
         printf("x: %i, y: %i\n", x, y);
-        verificarReta(lista_r, x, y);
+        verificarReta(lista_r, lista_auxiliar_r, x, y);
+    }
+    else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 5)
+    {
+        verificarPoligono(lista_pol, lista_auxiliar_pol, x, height - y);
     }
 }
 
@@ -888,7 +985,7 @@ void menuOpcoes(int opcao)
         break;
     case 5:
         aux = 5;
-        printf("Escolheu Selecionar Pol�gono\n");
+        printf("Escolheu Selecionar Poligono\n");
     default:
         break;
     }

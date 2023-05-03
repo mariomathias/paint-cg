@@ -505,6 +505,7 @@ void aumentarPol(Elemento_pol **lista_auxiliar_pol){
         glScalef(2.0,2.0,1.0);
         glTranslatef(-centrox, -centroy, 0);
         glPopMatrix();
+        aux = aux->prox
     }
     glutPostRedisplay();
 }
@@ -549,6 +550,119 @@ void diminuirPol(Elemento_pol **lista_auxiliar_pol){
         glScalef(0.5,0.5,1.0);
         glTranslatef(-centrox, -centroy, 0);
         glPopMatrix();
+        aux = aux->prox
+    }
+    glutPostRedisplay();
+}
+
+void rotacionarPontoPositivo(Elemento_p **lista_auxiliar_p){
+    Elemento_p *aux = *lista_auxiliar_p;
+    while (aux != NULL){
+        glPushMatrix();
+        glRotatef(10, 0,0,1);
+        glPopMatrix();
+        aux = aux->prox
+    }
+    glutPostRedisplay();
+}
+
+void rotacionarRetaPositivo(Elemento_r **lista_auxiliar_r){
+    Elemento_r *aux = *lista_auxiliar_r;
+    int centrox = 0;
+    int centroy = 0;
+    while (aux != NULL){
+        centrox = (aux->reta.inicio.x + aux->reta.fim.x) / 2;
+        centroy = (aux->reta.inicio.y + aux->reta.fim.y) / 2;
+        glPushMatrix();
+        glTranslatef(centrox, centroy, 0);
+        glRotatef(10,0,0,1);
+        glTranslatef(-centrox, -centroy, 0);
+        glPopMatrix();
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void rotacionarPolPositivo(Elemento_pol **lista_auxiliar_pol){
+    Elemento_pol *aux = *lista_auxiliar_pol;
+    Elemento_p *vertice = NULL;
+    int centrox = 0;
+    int centroy = 0;
+    int somax = 0;
+    int somay = 0;
+    while (aux != NULL){
+        n = aux->poligono.qtd_vertices;
+        vertice = *(aux->poligono.vertices);
+        somax = 0;
+        somay = 0
+        while (vertice != NULL){
+            somax += vertice.ponto.x;
+            somay += vertice.ponto.y;
+        }
+        centrox = somax / n;
+        centroy = somay / n;
+        glPushMatrix();
+        glTranslatef(centrox, centroy, 0);
+        glRotatef(10,0,0,1);
+        glTranslatef(-centrox, -centroy, 0);
+        glPopMatrix();
+        aux = aux->prox
+    }
+    glutPostRedisplay();
+}
+
+void rotacionarPontoNegativo(Elemento_p **lista_auxiliar_p){
+    Elemento_p *aux = *lista_auxiliar_p;
+    while (aux != NULL){
+        glPushMatrix();
+        glRotatef(-10, 0,0,1);
+        glPopMatrix();
+        aux = aux->prox
+    }
+    glutPostRedisplay();
+}
+
+void rotacionarRetaNegativo(Elemento_r **lista_auxiliar_r){
+    Elemento_r *aux = *lista_auxiliar_r;
+    int centrox = 0;
+    int centroy = 0;
+    while (aux != NULL){
+        centrox = (aux->reta.inicio.x + aux->reta.fim.x) / 2;
+        centroy = (aux->reta.inicio.y + aux->reta.fim.y) / 2;
+        glPushMatrix();
+        glTranslatef(centrox, centroy, 0);
+        glRotatef(-10,0,0,1);
+        glTranslatef(-centrox, -centroy, 0);
+        glPopMatrix();
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void rotacionarPolNegativo(Elemento_pol **lista_auxiliar_pol){
+    Elemento_pol *aux = *lista_auxiliar_pol;
+    Elemento_p *vertice = NULL;
+    int centrox = 0;
+    int centroy = 0;
+    int somax = 0;
+    int somay = 0;
+    while (aux != NULL){
+        n = aux->poligono.qtd_vertices;
+        vertice = *(aux->poligono.vertices);
+        somax = 0;
+        somay = 0
+        while (vertice != NULL){
+            somax += vertice.ponto.x;
+            somay += vertice.ponto.y;
+        }
+        centrox = somax / n;
+        centroy = somay / n;
+        glPushMatrix();
+        glTranslatef(centrox, centroy, 0);
+        glRotatef(-10,0,0,1);
+        glTranslatef(-centrox, -centroy, 0);
+        glPopMatrix();
+        aux = aux->prox
     }
     glutPostRedisplay();
 }
@@ -630,6 +744,7 @@ void keyboard(unsigned char key, int x, int y)
         break;
 
     case 100:
+        //move para direita no 'd'
         if (aux == 3)
         {
             transladarPontoDireita(lista_auxiliar_p);
@@ -644,6 +759,7 @@ void keyboard(unsigned char key, int x, int y)
         }
         break;
     case 97:
+        //move para esquerda no 'a'
         if (aux == 3)
         {
             transladarPontoEsquerda(lista_auxiliar_p);
@@ -658,6 +774,7 @@ void keyboard(unsigned char key, int x, int y)
         }
         break;
     case 115:
+        //move para baixo no 's'
         if (aux == 3)
         {
             transladarPontoBaixo(lista_auxiliar_p);
@@ -672,6 +789,7 @@ void keyboard(unsigned char key, int x, int y)
         }
         break;
     case 119:
+        //move para cima no 'w'
         if (aux == 3)
         {
             transladarPontoCima(lista_auxiliar_p);
@@ -711,9 +829,27 @@ void keyboard(unsigned char key, int x, int y)
         break;
     case 52:
         //rotaciona no sentido horário no 4
+        if (aux == 3){
+            rotacionarPontoPositivo(lista_auxiliar_p);
+        }
+        if (aux == 4){
+            rotacionarRetaPositivo(lista_auxiliar_r);
+        }
+        if (aux == 5){
+            rotacionarPolPositivo(lista_auxiliar_pol);
+        }
         break;
     case 54:
         //rotaciona no sentido antihorário no 6
+        if (aux == 3){
+            rotacionarPontoNegativo(lista_auxiliar_p);
+        }
+        if (aux == 4){
+            rotacionarRetaNegativo(lista_auxiliar_r);
+        }
+        if (aux == 5){
+            rotacionarPolNegativo(lista_auxiliar_pol);
+        }
         break;
     }
 }

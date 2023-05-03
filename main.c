@@ -489,14 +489,15 @@ void aumentarPol(Elemento_pol **lista_auxiliar_pol){
     int centroy = 0;
     int somax = 0;
     int somay = 0;
+    int n = 0;
     while (aux != NULL){
         n = aux->poligono.qtd_vertices;
         vertice = *(aux->poligono.vertices);
         somax = 0;
-        somay = 0
+        somay = 0;
         while (vertice != NULL){
-            somax += vertice.ponto.x;
-            somay += vertice.ponto.y;
+            somax += vertice->ponto.x;
+            somay += vertice->ponto.y;
         }
         centrox = somax / n;
         centroy = somay / n;
@@ -505,7 +506,7 @@ void aumentarPol(Elemento_pol **lista_auxiliar_pol){
         glScalef(2.0,2.0,1.0);
         glTranslatef(-centrox, -centroy, 0);
         glPopMatrix();
-        aux = aux->prox
+        aux = aux->prox;
     }
     glutPostRedisplay();
 }
@@ -534,14 +535,15 @@ void diminuirPol(Elemento_pol **lista_auxiliar_pol){
     int centroy = 0;
     int somax = 0;
     int somay = 0;
+    int n = 0;
     while (aux != NULL){
         n = aux->poligono.qtd_vertices;
         vertice = *(aux->poligono.vertices);
         somax = 0;
-        somay = 0
+        somay = 0;
         while (vertice != NULL){
-            somax += vertice.ponto.x;
-            somay += vertice.ponto.y;
+            somax += vertice->ponto.x;
+            somay += vertice->ponto.y;
         }
         centrox = somax / n;
         centroy = somay / n;
@@ -550,7 +552,7 @@ void diminuirPol(Elemento_pol **lista_auxiliar_pol){
         glScalef(0.5,0.5,1.0);
         glTranslatef(-centrox, -centroy, 0);
         glPopMatrix();
-        aux = aux->prox
+        aux = aux->prox;
     }
     glutPostRedisplay();
 }
@@ -561,7 +563,7 @@ void rotacionarPontoPositivo(Elemento_p **lista_auxiliar_p){
         glPushMatrix();
         glRotatef(10, 0,0,1);
         glPopMatrix();
-        aux = aux->prox
+        aux = aux->prox;
     }
     glutPostRedisplay();
 }
@@ -590,14 +592,15 @@ void rotacionarPolPositivo(Elemento_pol **lista_auxiliar_pol){
     int centroy = 0;
     int somax = 0;
     int somay = 0;
+    int n = 0;
     while (aux != NULL){
         n = aux->poligono.qtd_vertices;
         vertice = *(aux->poligono.vertices);
         somax = 0;
-        somay = 0
+        somay = 0;
         while (vertice != NULL){
-            somax += vertice.ponto.x;
-            somay += vertice.ponto.y;
+            somax += vertice->ponto.x;
+            somay += vertice->ponto.y;
         }
         centrox = somax / n;
         centroy = somay / n;
@@ -606,7 +609,7 @@ void rotacionarPolPositivo(Elemento_pol **lista_auxiliar_pol){
         glRotatef(10,0,0,1);
         glTranslatef(-centrox, -centroy, 0);
         glPopMatrix();
-        aux = aux->prox
+        aux = aux->prox;
     }
     glutPostRedisplay();
 }
@@ -617,7 +620,7 @@ void rotacionarPontoNegativo(Elemento_p **lista_auxiliar_p){
         glPushMatrix();
         glRotatef(-10, 0,0,1);
         glPopMatrix();
-        aux = aux->prox
+        aux = aux->prox;
     }
     glutPostRedisplay();
 }
@@ -646,14 +649,15 @@ void rotacionarPolNegativo(Elemento_pol **lista_auxiliar_pol){
     int centroy = 0;
     int somax = 0;
     int somay = 0;
+    int n = 0;
     while (aux != NULL){
         n = aux->poligono.qtd_vertices;
         vertice = *(aux->poligono.vertices);
         somax = 0;
-        somay = 0
+        somay = 0;
         while (vertice != NULL){
-            somax += vertice.ponto.x;
-            somay += vertice.ponto.y;
+            somax += vertice->ponto.x;
+            somay += vertice->ponto.y;
         }
         centrox = somax / n;
         centroy = somay / n;
@@ -662,7 +666,7 @@ void rotacionarPolNegativo(Elemento_pol **lista_auxiliar_pol){
         glRotatef(-10,0,0,1);
         glTranslatef(-centrox, -centroy, 0);
         glPopMatrix();
-        aux = aux->prox
+        aux = aux->prox;
     }
     glutPostRedisplay();
 }
@@ -829,6 +833,7 @@ void keyboard(unsigned char key, int x, int y)
         break;
     case 52:
         //rotaciona no sentido horário no 4
+        printf("rotacionando\n");
         if (aux == 3){
             rotacionarPontoPositivo(lista_auxiliar_p);
         }
@@ -841,6 +846,7 @@ void keyboard(unsigned char key, int x, int y)
         break;
     case 54:
         //rotaciona no sentido antihorário no 6
+        printf("rotacionando\n");
         if (aux == 3){
             rotacionarPontoNegativo(lista_auxiliar_p);
         }

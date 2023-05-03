@@ -33,6 +33,7 @@ Elemento_r **lista_r = NULL;
 Elemento_pol **lista_pol = NULL;
 // 2.auxiliares
 Elemento_p **lista_auxiliar = NULL; //Lista dos pontos selecionados
+Elemento_r **lista_auxiliar = NULL; //Lista das retas selecionadas
 Elemento_p **lista_vertices = NULL;
 Ponto pontos_reta[2];
 int cont_pontos_pol = 0;
@@ -287,18 +288,39 @@ int verificarReta(Elemento_r **lista_r, int mx, int my)
 void transladarPontoDireita(Elemento_p **lista_auxiliar){
     Elemento_p *aux = *lista_auxiliar;
     while (aux != NULL){
-        aux->ponto.x += 5;
+        aux->ponto.x += 2;
         printf("transladando para direita %i \n", aux->ponto.x);
         aux = aux->prox;
     }
     glutPostRedisplay();
 }
 
+void transladarRetaDireta(Elemento_r **lista_auxiliar){
+    Elemento_r *aux = *lista auxiliar;
+    while (aux != NULL){
+        aux->reta.inicio.x += 2;
+        aux->reta.fim.x += 2;
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+
 void transladarPontoEsquerda(Elemento_p **lista_auxiliar){
     Elemento_p *aux = *lista_auxiliar;
     while (aux != NULL){
         printf("transladando para esquerda %i \n", aux->ponto.x);
-        aux->ponto.x -= 5;
+        aux->ponto.x -= 2;
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void transladarRetaEsquerda(Elemento_r **lista_auxiliar){
+    Elemento_r *aux = *lista auxiliar;
+    while (aux != NULL){
+        aux->reta.inicio.x -= 2;
+        aux->reta.fim.x -= 2;
         aux = aux->prox;
     }
     glutPostRedisplay();
@@ -308,7 +330,17 @@ void transladarPontoCima(Elemento_p **lista_auxiliar){
     Elemento_p *aux = *lista_auxiliar;
     while (aux != NULL){
         printf("transladando para cima %i \n", aux->ponto.y);
-        aux->ponto.y += 5;
+        aux->ponto.y += 2;
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void transladarRetaCima(Elemento_r **lista_auxiliar){
+    Elemento_r *aux = *lista auxiliar;
+    while (aux != NULL){
+        aux->reta.inicio.y += 2;
+        aux->reta.fim.y += 2;
         aux = aux->prox;
     }
     glutPostRedisplay();
@@ -318,7 +350,17 @@ void transladarPontoBaixo(Elemento_p **lista_auxiliar){
     Elemento_p *aux = *lista_auxiliar;
     while (aux != NULL){
         printf("transladando para baixo %i \n", aux->ponto.y);
-        aux->ponto.y -= 5;
+        aux->ponto.y -= 2;
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void transladarRetaBaixo(Elemento_r **lista_auxiliar){
+    Elemento_r *aux = *lista auxiliar;
+    while (aux != NULL){
+        aux->reta.inicio.y -= 2;
+        aux->reta.fim.y -= 2;
         aux = aux->prox;
     }
     glutPostRedisplay();
@@ -406,7 +448,7 @@ void keyboard(unsigned char key, int x, int y)
             transladarPontoDireita(lista_auxiliar);
         }
         if (aux == 4){
-            printf("a");
+            transladarRetaDireta(lista_auxiliar);
         }
         glPopMatrix();
         break;
@@ -415,7 +457,7 @@ void keyboard(unsigned char key, int x, int y)
             transladarPontoEsquerda(lista_auxiliar);
         }
         if (aux == 4){
-            printf("a");
+            transladarRetaEsquerda(lista_auxiliar);
         }
         break;
     case 115:
@@ -423,7 +465,7 @@ void keyboard(unsigned char key, int x, int y)
             transladarPontoBaixo(lista_auxiliar);
         }
         if (aux == 4){
-            printf("a");
+            transladarRetaBaixo(lista_auxiliar);
         }
         break;
     case 119:
@@ -431,7 +473,7 @@ void keyboard(unsigned char key, int x, int y)
             transladarPontoCima(lista_auxiliar);
         }
         if (aux == 4){
-            printf("a");
+            transladarRetaCima(lista_auxiliar);
         }
         break;
     case 43:

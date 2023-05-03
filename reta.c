@@ -11,7 +11,7 @@ Elemento_r **criar_lista_r()
 
 Reta cria_reta(Ponto inicio, Ponto fim)
 {
-    Reta reta = {inicio, fim, 0};
+    Reta reta = {inicio, fim};
     return reta;
 }
 int insercao_r(Elemento_r **lista, Reta reta)
@@ -36,6 +36,61 @@ int insercao_r(Elemento_r **lista, Reta reta)
             aux = aux->prox;
         }
         aux->prox = novo_elem;
+        return 1;
+    }
+}
+
+int compara_reta(Reta p, Reta q)
+{
+    int a = (compara_ponto(p.inicio, q.inicio) && compara_ponto(p.fim, q.fim)) ? 1 : 0;
+    return a;
+}
+Elemento_r *remover_r(Elemento_r **lista, Reta reta)
+{
+    Elemento_r *aux, *removido = NULL;
+    if (*lista)
+    {
+        if (compara_reta((*lista)->reta, reta))
+        {
+            removido = *lista;
+            *lista = (*lista)->prox;
+        }
+        else
+        {
+            aux = *lista;
+            while (aux->prox != NULL && compara_reta(aux->prox->reta, reta) == 0)
+            {
+                aux = aux->prox;
+            }
+            if (aux->prox)
+            {
+                removido = aux->prox;
+                aux->prox = removido->prox;
+            }
+        }
+    }
+    return removido;
+}
+int insercao_r_pointer(Elemento_r **lista, Elemento_r *pointer)
+{
+    if (lista == NULL)
+    {
+        return 0;
+    }
+    else
+    {
+        pointer->prox = NULL;
+        if (*lista == NULL)
+        {
+            *lista = pointer;
+            return 1;
+        }
+        Elemento_p *aux = *lista;
+        while (aux->prox != NULL)
+        {
+            aux = aux->prox;
+        }
+        aux->prox = pointer;
         return 1;
     }
 }

@@ -141,6 +141,19 @@ void desenharReta(Elemento_r **retas)
 }
 
 //------FUNCOES AUXILIARES------
+int pegarPonto(int px, int py, int mx, int my, int tolerance)
+{
+    // printf("%i, %i/%i, %i\n", px + tolerance, px - tolerance, py + tolerance, py - tolerance);
+    // printf("%i, %i\n", mx, my);
+    if (mx <= px + tolerance && mx >= px - tolerance)
+    {
+        if (my <= (height - py) + tolerance && my >= (height - py) - tolerance)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
 int verificarPonto(Elemento_p **lista_p, Elemento_p **lista_auxiliar_p, int mx, int my)
 {
     int foiSelecionado = 0;
@@ -162,20 +175,6 @@ int verificarPonto(Elemento_p **lista_p, Elemento_p **lista_auxiliar_p, int mx, 
     }
 }
 
-int pegarPonto(int px, int py, int mx, int my, int tolerance)
-{
-    // printf("%i, %i/%i, %i\n", px + tolerance, px - tolerance, py + tolerance, py - tolerance);
-    // printf("%i, %i\n", mx, my);
-    if (mx <= px + tolerance && mx >= px - tolerance)
-    {
-        if (my <= (height - py) + tolerance && my >= (height - py) - tolerance)
-        {
-            return 1;
-        }
-    }
-    return 0;
-}
-
 void deselecionaPonto(Elemento_p **lista_p)
 {
     Elemento_p *aux = *lista_auxiliar_p;
@@ -187,7 +186,25 @@ void deselecionaPonto(Elemento_p **lista_p)
         insercao_p_pointer(lista_p, removido);
     }
 }
+int identificarCodigo(Ponto p, int mx, int my)
+{
+    int codigo = DENTRO;
+    printf("Mouse (%i,%i)\n", mx, my);
+    // 0001
+    if ((height - p.y) > my + tolerance)
+        codigo += ACIMA;
+    // 0010
+    if ((height - p.y) < my - tolerance)
+        codigo += ABAIXO;
+    // 0100
+    if (p.x > mx + tolerance)
+        codigo += ESQUERDA;
+    // 1000
+    if (p.x < mx - tolerance)
+        codigo += DIREITA;
 
+    return codigo;
+}
 int pegarReta(Ponto inicioP, Ponto fimP, int mx, int my)
 {
     int xmax = mx + tolerance;
@@ -273,26 +290,6 @@ int pegarReta(Ponto inicioP, Ponto fimP, int mx, int my)
         }
     }
     return 0;
-}
-
-int identificarCodigo(Ponto p, int mx, int my)
-{
-    int codigo = DENTRO;
-    printf("Mouse (%i,%i)\n", mx, my);
-    // 0001
-    if ((height - p.y) > my + tolerance)
-        codigo += ACIMA;
-    // 0010
-    if ((height - p.y) < my - tolerance)
-        codigo += ABAIXO;
-    // 0100
-    if (p.x > mx + tolerance)
-        codigo += ESQUERDA;
-    // 1000
-    if (p.x < mx - tolerance)
-        codigo += DIREITA;
-
-    return codigo;
 }
 
 int verificarReta(Elemento_r **lista_r, int mx, int my)

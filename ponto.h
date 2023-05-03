@@ -16,6 +16,9 @@ typedef struct elemento_p
 
 Elemento_p **criar_lista_p();
 int insercao_p(Elemento_p **lista, Ponto ponto);
+int insercao_p_pointer(Elemento_p **lista, Elemento_p *pointer);
+int compara_ponto(Ponto p, Ponto q);
+Elemento_p *remover_p(Elemento_p **lista, Ponto ponto);
 Ponto cria_ponto(int x, int y);
 void print_ponto(Ponto p);
 Ponto get_point_list(Elemento_p **lista, int n);

@@ -97,3 +97,59 @@ int get_tamanho_lista_p(Elemento_p **lista)
         return cont;
     }
 }
+int compara_ponto(Ponto p, Ponto q)
+{
+    int a = ((p.x == q.x) && (p.y == q.y)) ? 1 : 0;
+    return a;
+}
+
+Elemento_p *remover_p(Elemento_p **lista, Ponto ponto)
+{
+    Elemento_p *aux, *removido = NULL;
+    if (*lista)
+    {
+        if (compara_ponto((*lista)->ponto, ponto))
+        {
+            removido = *lista;
+            *lista = (*lista)->prox;
+        }
+        else
+        {
+            aux = *lista;
+            while (aux->prox != NULL && compara_ponto(aux->prox->ponto, ponto) == 0)
+            {
+                aux = aux->prox;
+            }
+            if (aux->prox)
+            {
+                removido = aux->prox;
+                aux->prox = removido->prox;
+            }
+        }
+    }
+    return removido;
+}
+
+int insercao_p_pointer(Elemento_p **lista, Elemento_p *pointer)
+{
+    if (lista == NULL)
+    {
+        return 0;
+    }
+    else
+    {
+        pointer->prox = NULL;
+        if (*lista == NULL)
+        {
+            *lista = pointer;
+            return 1;
+        }
+        Elemento_p *aux = *lista;
+        while (aux->prox != NULL)
+        {
+            aux = aux->prox;
+        }
+        aux->prox = pointer;
+        return 1;
+    }
+}

@@ -32,7 +32,7 @@ Elemento_p **lista_p = NULL;
 Elemento_r **lista_r = NULL;
 Elemento_pol **lista_pol = NULL;
 // 2.auxiliares
-Elemento_p **lista_auxiliar = NULL; //Lista dos pontos selecionados
+Elemento_p **lista_auxiliar_p = NULL; // Lista dos pontos selecionados
 Elemento_p **lista_vertices = NULL;
 Ponto pontos_reta[2];
 int cont_pontos_pol = 0;
@@ -102,12 +102,16 @@ void desenharPonto(Elemento_p **lista)
     Elemento_p *aux = *lista;
     while (aux != NULL)
     {
-        if (aux->ponto.selecionado == 1) {
-            glColor3f(0.0, 1.0, 0.0);
-        } else {
-            glColor3f(1.0, 1.0, 1.0);
-        }
         glVertex2i(aux->ponto.x, aux->ponto.y);
+        print_ponto(aux->ponto);
+        aux = aux->prox;
+    }
+    aux = *lista_auxiliar_p;
+    glColor3f(0, 1.0, 0);
+    while (aux != NULL)
+    {
+        glVertex2i(aux->ponto.x, aux->ponto.y);
+        print_ponto(aux->ponto);
         aux = aux->prox;
     }
     glEnd();
@@ -135,33 +139,35 @@ void desenharReta(Elemento_r **retas)
 }
 
 //------FUNCOES AUXILIARES------
-int verificarPonto(Elemento_p **lista_p, Elemento_p **lista_auxiliar, int mx, int my)
+int verificarPonto(Elemento_p **lista_p, Elemento_p **lista_auxiliar_p, int mx, int my)
 {
     int foiSelecionado = 0;
     Elemento_p *aux = *lista_p;
-    Elemento_p *aux2 = *lista_auxiliar;
-    while(aux != NULL) {
+    Elemento_p *removido = NULL;
+    while (aux != NULL)
+    {
         foiSelecionado = pegarPonto(aux->ponto.x, aux->ponto.y, mx, my, tolerance);
         printf("foiSelecionado: %i\n", foiSelecionado);
-        if (foiSelecionado == 1) {
-            aux->ponto.selecionado = foiSelecionado;
-            Ponto pontao = cria_ponto(aux->ponto.x, aux->ponto.y);
-            printf("criou ponto: %i, %i\n", pontao.x, pontao.y);
-            insercao_p(lista_auxiliar, pontao);
-            return 1;
-            break;
-        } else {
-            aux = aux->prox;
+        if (foiSelecionado)
+        {
+            printf("ponto a ser removido: ");
+            print_ponto(aux->ponto);
+            removido = remover_p(lista_p, aux->ponto);
+            printf("removido ponto: (%d,%d)\n", removido->ponto.x, removido->ponto.y);
+            insercao_p_pointer(lista_auxiliar_p, removido);
         }
+        aux = aux->prox;
     }
 }
 
 int pegarPonto(int px, int py, int mx, int my, int tolerance)
 {
-    //printf("%i, %i/%i, %i\n", px + tolerance, px - tolerance, py + tolerance, py - tolerance);
-    //printf("%i, %i\n", mx, my);
-    if (mx <= px + tolerance && mx >= px - tolerance) {
-        if (my <= (height-py) + tolerance && my >= (height-py) - tolerance) {
+    // printf("%i, %i/%i, %i\n", px + tolerance, px - tolerance, py + tolerance, py - tolerance);
+    // printf("%i, %i\n", mx, my);
+    if (mx <= px + tolerance && mx >= px - tolerance)
+    {
+        if (my <= (height - py) + tolerance && my >= (height - py) - tolerance)
+        {
             return 1;
         }
     }
@@ -170,10 +176,13 @@ int pegarPonto(int px, int py, int mx, int my, int tolerance)
 
 void deselecionaPonto(Elemento_p **lista_p)
 {
-    Elemento_p *aux = *lista_p;
-    while (aux != NULL) {
-        aux->ponto.selecionado = 0;
+    Elemento_p *aux = *lista_auxiliar_p;
+    Elemento_p *removido = NULL;
+    while (aux != NULL)
+    {
+        removido = remover_p(lista_auxiliar_p, (*lista_auxiliar_p)->ponto);
         aux = aux->prox;
+        insercao_p_pointer(lista_p, removido);
     }
 }
 
@@ -189,68 +198,76 @@ int pegarReta(Ponto inicioP, Ponto fimP, int mx, int my)
     auxPonto.x = inicioP.x;
     auxPonto.y = inicioP.y;
     printf("auxPonto.x: %i\n", auxPonto.x);
-    //printf("auxPonto.y: %i\n", auxPonto.y);
+    // printf("auxPonto.y: %i\n", auxPonto.y);
 
-    while (1) {
+    while (1)
+    {
         int codeInicioP = identificarCodigo(auxPonto, mx, my);
         int codeFimP = identificarCodigo(fimP, mx, my);
-        printf("fimP: (%i,%i)\n", fimP.x,height-fimP.y);
+        printf("fimP: (%i,%i)\n", fimP.x, height - fimP.y);
         printf("codeInicioP: %i\n", codeInicioP);
         printf("codeFimP: %i\n", codeFimP);
         printf("AND: %i\n", codeInicioP & 1);
         printf("AND: %i\n", codeInicioP & 4);
 
-        if (codeInicioP == 0 && codeFimP == 0) {  //Os 2 pontos na tolerancia
+        if (codeInicioP == 0 && codeFimP == 0)
+        { // Os 2 pontos na tolerancia
             printf("Os 2 pontos estao na tolerancia\n");
             return 1;
             break;
         }
-        else if (codeInicioP == 0 || codeFimP == 0) { //Um dos pontos na tolerancia
+        else if (codeInicioP == 0 || codeFimP == 0)
+        { // Um dos pontos na tolerancia
             printf("Um dos pontos na tolerancia\n");
             return 1;
             break;
         }
-        else if ((codeInicioP & codeFimP) != 0) { //Totalmente fora da tolerancia
+        else if ((codeInicioP & codeFimP) != 0)
+        { // Totalmente fora da tolerancia
             printf("Totalmente fora da tolerancia\n");
             return 0;
             break;
         }
-        else { //Caso nao trivial, mas so uma delas tao certas, ops
+        else
+        { // Caso nao trivial, mas so uma delas tao certas, ops
             x1 = auxPonto.x;
             y1 = auxPonto.y;
             x2 = fimP.x;
             y2 = fimP.y;
 
-            if ((codeInicioP & 1) == ACIMA) {
+            if ((codeInicioP & 1) == ACIMA)
+            {
                 printf("Ponto inicial acima\n");
-                auxPonto.x = x1 + (ymax - x1)*((x2 - x1)/(y2 - y1));
+                auxPonto.x = x1 + (ymax - x1) * ((x2 - x1) / (y2 - y1));
                 auxPonto.y = ymax;
                 printf("|| auxPontox: %i ||\n", auxPonto.x);
                 printf("|| auxPontoy: %i ||\n", auxPonto.y);
                 break;
             }
-            else if ((codeInicioP & 2) == ABAIXO) {
+            else if ((codeInicioP & 2) == ABAIXO)
+            {
                 printf("Ponto inicial abaixo\n");
-                auxPonto.x = x1 + (ymin - y1)*((x2 - x1)/(y2 - y1));
+                auxPonto.x = x1 + (ymin - y1) * ((x2 - x1) / (y2 - y1));
                 auxPonto.y = ymin;
                 printf("|| auxPontox: %i ||\n", auxPonto.x);
                 printf("|| auxPontoy: %i ||\n", auxPonto.y);
             }
-            else if ((codeInicioP & 4) == ESQUERDA) {
+            else if ((codeInicioP & 4) == ESQUERDA)
+            {
                 printf("Ponto inicial a esquerda\n");
-                auxPonto.y = y1 + (xmax - x1)*((y2 - y1)/(x2 - y1));
+                auxPonto.y = y1 + (xmax - x1) * ((y2 - y1) / (x2 - y1));
                 auxPonto.x = xmax;
                 printf("|| auxPontox: %i ||\n", auxPonto.x);
                 printf("|| auxPontoy: %i ||\n", auxPonto.y);
             }
-            else if ((codeInicioP & 8) == DIREITA) {
+            else if ((codeInicioP & 8) == DIREITA)
+            {
                 printf("Ponto inicial a direita\n");
-                auxPonto.y = y1 + (xmin - x1)*((y2 - y1)/(x2 - x1));
+                auxPonto.y = y1 + (xmin - x1) * ((y2 - y1) / (x2 - x1));
                 auxPonto.x = xmin;
                 printf("|| auxPontox: %i ||\n", auxPonto.x);
                 printf("|| auxPontoy: %i ||\n", auxPonto.y);
             }
-
         }
     }
     return 0;
@@ -260,14 +277,18 @@ int identificarCodigo(Ponto p, int mx, int my)
 {
     int codigo = DENTRO;
     printf("Mouse (%i,%i)\n", mx, my);
-    //0001
-    if ((height-p.y) > my + tolerance) codigo += ACIMA;
-    //0010
-    if ((height-p.y) < my - tolerance) codigo += ABAIXO;
-    //0100
-    if (p.x > mx + tolerance) codigo += ESQUERDA;
-    //1000
-    if (p.x < mx - tolerance) codigo += DIREITA;
+    // 0001
+    if ((height - p.y) > my + tolerance)
+        codigo += ACIMA;
+    // 0010
+    if ((height - p.y) < my - tolerance)
+        codigo += ABAIXO;
+    // 0100
+    if (p.x > mx + tolerance)
+        codigo += ESQUERDA;
+    // 1000
+    if (p.x < mx - tolerance)
+        codigo += DIREITA;
 
     return codigo;
 }
@@ -277,16 +298,19 @@ int verificarReta(Elemento_r **lista_r, int mx, int my)
     int foiSelecionado = 0;
     Elemento_r *aux = *lista_r;
 
-    while (aux != NULL) {
+    while (aux != NULL)
+    {
         foiSelecionado = pegarReta(aux->reta.inicio, aux->reta.fim, mx, my);
         printf("foiSelecionado: %i\n", foiSelecionado);
         aux = aux->prox;
     }
 }
 
-void transladarPontoDireita(Elemento_p **lista_auxiliar){
-    Elemento_p *aux = *lista_auxiliar;
-    while (aux != NULL){
+void transladarPontoDireita(Elemento_p **lista_auxiliar_p)
+{
+    Elemento_p *aux = *lista_auxiliar_p;
+    while (aux != NULL)
+    {
         aux->ponto.x += 5;
         printf("transladando para direita %i \n", aux->ponto.x);
         aux = aux->prox;
@@ -294,9 +318,11 @@ void transladarPontoDireita(Elemento_p **lista_auxiliar){
     glutPostRedisplay();
 }
 
-void transladarPontoEsquerda(Elemento_p **lista_auxiliar){
-    Elemento_p *aux = *lista_auxiliar;
-    while (aux != NULL){
+void transladarPontoEsquerda(Elemento_p **lista_auxiliar_p)
+{
+    Elemento_p *aux = *lista_auxiliar_p;
+    while (aux != NULL)
+    {
         printf("transladando para esquerda %i \n", aux->ponto.x);
         aux->ponto.x -= 5;
         aux = aux->prox;
@@ -304,9 +330,11 @@ void transladarPontoEsquerda(Elemento_p **lista_auxiliar){
     glutPostRedisplay();
 }
 
-void transladarPontoCima(Elemento_p **lista_auxiliar){
-    Elemento_p *aux = *lista_auxiliar;
-    while (aux != NULL){
+void transladarPontoCima(Elemento_p **lista_auxiliar_p)
+{
+    Elemento_p *aux = *lista_auxiliar_p;
+    while (aux != NULL)
+    {
         printf("transladando para cima %i \n", aux->ponto.y);
         aux->ponto.y += 5;
         aux = aux->prox;
@@ -314,9 +342,11 @@ void transladarPontoCima(Elemento_p **lista_auxiliar){
     glutPostRedisplay();
 }
 
-void transladarPontoBaixo(Elemento_p **lista_auxiliar){
-    Elemento_p *aux = *lista_auxiliar;
-    while (aux != NULL){
+void transladarPontoBaixo(Elemento_p **lista_auxiliar_p)
+{
+    Elemento_p *aux = *lista_auxiliar_p;
+    while (aux != NULL)
+    {
         printf("transladando para baixo %i \n", aux->ponto.y);
         aux->ponto.y -= 5;
         aux = aux->prox;
@@ -373,7 +403,7 @@ void mouse(int button, int state, int x, int y)
     }
     else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 3)
     {
-        verificarPonto(lista_p, lista_auxiliar, pos_x, pos_y);
+        verificarPonto(lista_p, lista_auxiliar_p, pos_x, pos_y);
     }
     else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && aux == 4)
     {
@@ -402,48 +432,58 @@ void keyboard(unsigned char key, int x, int y)
 
     case 100:
         glPushMatrix();
-        if (aux == 3){
-            transladarPontoDireita(lista_auxiliar);
+        if (aux == 3)
+        {
+            transladarPontoDireita(lista_auxiliar_p);
         }
-        if (aux == 4){
+        if (aux == 4)
+        {
             printf("a");
         }
         glPopMatrix();
         break;
     case 97:
-        if (aux == 3){
-            transladarPontoEsquerda(lista_auxiliar);
+        if (aux == 3)
+        {
+            transladarPontoEsquerda(lista_auxiliar_p);
         }
-        if (aux == 4){
+        if (aux == 4)
+        {
             printf("a");
         }
         break;
     case 115:
-        if (aux == 3){
-            transladarPontoBaixo(lista_auxiliar);
+        if (aux == 3)
+        {
+            transladarPontoBaixo(lista_auxiliar_p);
         }
-        if (aux == 4){
+        if (aux == 4)
+        {
             printf("a");
         }
         break;
     case 119:
-        if (aux == 3){
-            transladarPontoCima(lista_auxiliar);
+        if (aux == 3)
+        {
+            transladarPontoCima(lista_auxiliar_p);
         }
-        if (aux == 4){
+        if (aux == 4)
+        {
             printf("a");
         }
         break;
     case 43:
-        //aumenta
-        if (aux == 3){
-            printf("não pode escalar ponto!\n");
+        // aumenta
+        if (aux == 3)
+        {
+            printf("nï¿½o pode escalar ponto!\n");
         }
         break;
     case 45:
-        //diminui
-        if (aux ==3){
-            printf("não pode escalar ponto!\n");
+        // diminui
+        if (aux == 3)
+        {
+            printf("nï¿½o pode escalar ponto!\n");
         }
     }
 }
@@ -482,11 +522,11 @@ void menuOpcoes(int opcao)
 
 void display()
 {
+    glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     desenharPonto(lista_p);
     desenharReta(lista_r);
     desenharPoligono(lista_pol);
-    // printf("ok: %d\n", poligono_aux->qtd_vertices);
     glLoadIdentity();
     glFlush();
 }
@@ -495,10 +535,9 @@ void display()
 int main(int argc, char **argv)
 {
     lista_p = criar_lista_p();
-    lista_auxiliar = criar_lista_p();
+    lista_auxiliar_p = criar_lista_p();
     lista_r = criar_lista_r();
     lista_pol = criar_lista_pol();
-    (*lista_auxiliar) = NULL;
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
@@ -514,9 +553,9 @@ int main(int argc, char **argv)
     glutAddMenuEntry("POLIGONO", 2);
 
     subMenuSelecionar = glutCreateMenu(menuOpcoes);
-    //coloquei as mesmas opcoes so para nao deixar em branco
-    //mas ao criar as funcinalidade de selecionar
-    //encaixar aqui por favor
+    // coloquei as mesmas opcoes so para nao deixar em branco
+    // mas ao criar as funcinalidade de selecionar
+    // encaixar aqui por favor
     glutAddMenuEntry("PONTO", 3);
     glutAddMenuEntry("RETA", 4);
     glutAddMenuEntry("POLIGONO", 5);

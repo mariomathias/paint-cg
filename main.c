@@ -465,6 +465,94 @@ void transladarPolBaixo(Elemento_pol **lista_auxiliar_pol)
     }
 }
 
+void aumentarReta(Elemento_r **lista_auxiliar_r){
+    Elemento_r *aux = *lista_auxiliar_r;
+    int centrox = 0;
+    int centroy = 0;
+    while (aux != NULL){
+        centrox = (aux->reta.inicio.x + aux->reta.fim.x) / 2;
+        centroy = (aux->reta.inicio.y + aux->reta.fim.y) / 2;
+        glPushMatrix();
+        glTranslatef(centrox, centroy, 0);
+        glScalef(2.0, 2.0, 1.0);
+        glTranslatef(-centrox, -centroy, 0);
+        glPopMatrix();
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void aumentarPol(Elemento_pol **lista_auxiliar_pol){
+    Elemento_pol *aux = *lista_auxiliar_pol;
+    Elemento_p *vertice = NULL;
+    int centrox = 0;
+    int centroy = 0;
+    int somax = 0;
+    int somay = 0;
+    while (aux != NULL){
+        n = aux->poligono.qtd_vertices;
+        vertice = *(aux->poligono.vertices);
+        somax = 0;
+        somay = 0
+        while (vertice != NULL){
+            somax += vertice.ponto.x;
+            somay += vertice.ponto.y;
+        }
+        centrox = somax / n;
+        centroy = somay / n;
+        glPushMatrix();
+        glTranslatef(centrox, centroy, 0);
+        glScalef(2.0,2.0,1.0);
+        glTranslatef(-centrox, -centroy, 0);
+        glPopMatrix();
+    }
+    glutPostRedisplay();
+}
+
+void diminuirReta(Elemento_r **lista_auxiliar_r){
+    Elemento_r *aux = *lista_auxiliar_r;
+    int centrox = 0;
+    int centroy = 0;
+    while (aux != NULL){
+        centrox = (aux->reta.inicio.x + aux->reta.fim.x) / 2;
+        centroy = (aux->reta.inicio.y + aux->reta.fim.y) / 2;
+        glPushMatrix();
+        glTranslatef(centrox, centroy, 0);
+        glScalef(0.5, 0.5, 1.0);
+        glTranslatef(-centrox, -centroy, 0);
+        glPopMatrix();
+        aux = aux->prox;
+    }
+    glutPostRedisplay();
+}
+
+void diminuirPol(Elemento_pol **lista_auxiliar_pol){
+    Elemento_pol *aux = *lista_auxiliar_pol;
+    Elemento_p *vertice = NULL;
+    int centrox = 0;
+    int centroy = 0;
+    int somax = 0;
+    int somay = 0;
+    while (aux != NULL){
+        n = aux->poligono.qtd_vertices;
+        vertice = *(aux->poligono.vertices);
+        somax = 0;
+        somay = 0
+        while (vertice != NULL){
+            somax += vertice.ponto.x;
+            somay += vertice.ponto.y;
+        }
+        centrox = somax / n;
+        centroy = somay / n;
+        glPushMatrix();
+        glTranslatef(centrox, centroy, 0);
+        glScalef(0.5,0.5,1.0);
+        glTranslatef(-centrox, -centroy, 0);
+        glPopMatrix();
+    }
+    glutPostRedisplay();
+}
+
 void init()
 {
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -598,18 +686,35 @@ void keyboard(unsigned char key, int x, int y)
         }
         break;
     case 43:
-        // aumenta
-        if (aux == 3)
-        {
-            printf("n�o pode escalar ponto!\n");
+        //aumenta clicando no +
+        if (aux == 3){
+            printf("não pode escalar ponto!\n");
+        }
+        if (aux == 4){
+            aumentarReta(lista_auxiliar_r);
+        }
+        if (aux == 5){
+            aumentarPol(lista_auxiliar_pol);
         }
         break;
     case 45:
-        // diminui
-        if (aux == 3)
-        {
-            printf("n�o pode escalar ponto!\n");
+        //diminui clicando no -
+        if (aux ==3){
+            printf("não pode escalar ponto!\n");
         }
+        if (aux == 4){
+            diminuirReta(lista_auxiliar_r);
+        }
+        if (aux == 5){
+            diminuirPol(lista_auxiliar_pol);
+        }
+        break;
+    case 52:
+        //rotaciona no sentido horário no 4
+        break;
+    case 54:
+        //rotaciona no sentido antihorário no 6
+        break;
     }
 }
 

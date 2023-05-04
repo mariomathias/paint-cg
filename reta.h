@@ -6,6 +6,7 @@ typedef struct
 {
     Ponto inicio;
     Ponto fim;
+    int selecionado;
 } Reta;
 
 typedef struct elemento_r
@@ -19,5 +20,6 @@ Elemento_r *remover_r(Elemento_r **lista, Reta reta);
 int insercao_r_pointer(Elemento_r **lista, Elemento_r *pointer);
 Elemento_r **criar_lista_r();
 int insercao_r(Elemento_r **lista, Reta reta);
+void delecao_lista_r(Elemento_r **lista);
 
 #endif

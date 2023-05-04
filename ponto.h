@@ -22,6 +22,6 @@ Elemento_p *remover_p(Elemento_p **lista, Ponto ponto);
 Ponto cria_ponto(int x, int y);
 void print_ponto(Ponto p);
 Ponto get_point_list(Elemento_p **lista, int n);
-void delecao_lista(Elemento_p **lista);
+void delecao_lista_p(Elemento_p **lista);
 int get_tamanho_lista_p(Elemento_p **lista);
 #endif

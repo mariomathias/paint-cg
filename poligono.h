@@ -22,5 +22,9 @@ int insercao_pol(Elemento_pol **lista, Poligono poligono);
 void add_vertice_pol(Poligono *p, Ponto vertice);
 Ponto get_vertice_pol(Poligono p, int k);
 void deleta_pol(Poligono *p);
+int compara_pol(Poligono p, Poligono q);
+Elemento_pol *remover_pol(Elemento_pol **lista, Poligono poli);
+int insercao_pol_pointer(Elemento_pol **lista, Elemento_pol *pointer);
+void delecao_lista_pol(Elemento_pol **lista);
 
 #endif

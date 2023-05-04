@@ -66,7 +66,7 @@ Ponto get_point_list(Elemento_p **lista, int n)
     }
     return vz;
 }
-void delecao_lista(Elemento_p **lista)
+void delecao_lista_p(Elemento_p **lista)
 {
     if (lista != NULL)
     {
@@ -78,6 +78,7 @@ void delecao_lista(Elemento_p **lista)
             free(aux);
         }
     }
+    *lista = NULL;
 }
 int get_tamanho_lista_p(Elemento_p **lista)
 {
